@@ -2,9 +2,19 @@ import { execSync } from "node:child_process";
 import parseGitDiff from "parse-git-diff";
 
 async function main() {
-  const diff = execSync("git diff HEAD~1 HEAD", {
+  const before = process.env.GITHUB_EVENT_BEFORE;
+  const after = process.env.GITHUB_SHA;
+
+  console.log({ before, after });
+
+  const range =
+    before && after
+      ? `${before} ${after}`
+      : "HEAD~1 HEAD";
+
+  const diff = execSync(`git diff ${range}`, {
     encoding: "utf8",
-});
+  });
 
   if (!diff.trim()) {
     console.log("No changes found.");
